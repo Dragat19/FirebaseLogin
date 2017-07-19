@@ -44,7 +44,7 @@ public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnCo
         tvDataUser = (TextView)findViewById(R.id.data_user);
         btnSingOut = (Button) findViewById(R.id.btn_signout);
         imgPerfil = (ImageView)findViewById(R.id.imgPhoto);
-        incializar();
+        inicializar();
 
         btnSingOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +68,7 @@ public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnCo
     }
 
 
-    private void incializar() {
+    private void inicializar() {
         firebaseAuth = FirebaseAuth.getInstance();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override

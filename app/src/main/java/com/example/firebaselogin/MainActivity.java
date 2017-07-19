@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     /**
-     * Registre con Email Firebase
+     * Registro con Email Firebase
      **/
     private void Sign(String Email, String Password) {
         firebaseAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
