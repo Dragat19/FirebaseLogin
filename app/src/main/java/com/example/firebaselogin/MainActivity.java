@@ -212,6 +212,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     finish();
                 } else {
                     Toast.makeText(MainActivity.this, "Facebook Authentication Unsuccess", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(MainActivity.this, UserLogin.class);
+                    startActivity(i);
                 }
             }
         });
@@ -244,8 +246,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (requestCode == SIGN_IN_GOOGLE_CODE) {
             GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             SignInGoogleFirebase(googleSignInResult);
-        }else {
-            callbackManager.onActivityResult(requestCode,resultCode,data);
+        } else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
         }
 
     }
