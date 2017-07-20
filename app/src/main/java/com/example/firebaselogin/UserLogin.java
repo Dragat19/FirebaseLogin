@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -53,16 +54,19 @@ public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnCo
                 Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(@NonNull Status status) {
-                        if (status.isSuccess()) {
-                            Intent intent = new Intent(UserLogin.this,MainActivity.class);
-                            startActivity(intent);
+                        if (status.isSuccess()){
+                            Intent i = new Intent(UserLogin.this, MainActivity.class);
+                            startActivity(i);
                             finish();
-                            
                         }else {
-                            Toast.makeText(UserLogin.this, "No Logeado Google", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserLogin.this, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+
+                if (LoginManager.getInstance() != null){
+                    LoginManager.getInstance().logOut();
+                }
             }
         });
     }
