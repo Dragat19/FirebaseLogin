@@ -2,12 +2,14 @@ package com.example.firebaselogin;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -42,23 +44,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private static final int SIGN_IN_GOOGLE_CODE = 1;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private EditText etEmail, etPassword;
+    private TextInputLayout etEmail, etPassword;
     private Button btnLogin, btnSignUp;
     private GoogleApiClient googleApiClient;
-    private SignInButton signInGoogle;
-    private LoginButton btnFacebook;
+    private RelativeLayout signInGoogle;
+    private RelativeLayout btnFacebook;
     private CallbackManager callbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        etEmail = (EditText) findViewById(R.id.login_email);
-        etPassword = (EditText) findViewById(R.id.login_password);
+        setContentView(R.layout.activity_login2);
+        etEmail = (TextInputLayout) findViewById(R.id.login_email);
+        etPassword = (TextInputLayout) findViewById(R.id.login_password);
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnSignUp = (Button) findViewById(R.id.btn_sign);
-        signInGoogle = (SignInButton) findViewById(R.id.btn_signin_google);
-        btnFacebook = (LoginButton) findViewById(R.id.btn_facebook);
+        signInGoogle = (RelativeLayout) findViewById(R.id.btn_signin_google);
+        btnFacebook = (RelativeLayout) findViewById(R.id.btn_facebook);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         Log.w(TAG, "Callback  " + callbackManager.toString());
@@ -69,14 +71,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                login(etEmail.getText().toString(), etPassword.getText().toString());
+                login(etEmail.getEditText().getText().toString(), etPassword.getEditText().getText().toString());
             }
         });
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Sign(etEmail.getText().toString(), etPassword.getText().toString());
+                Sign(etEmail.getEditText().getText().toString(), etPassword.getEditText().getText().toString());
             }
         });
 
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        btnFacebook.setReadPermissions(Arrays.asList("email"));
+       /* btnFacebook.setReadPermissions(Arrays.asList("email"));
         btnFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -106,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 Log.w(TAG, "Facebook Error");
                 error.printStackTrace();
             }
-        });
+        });*/
     }
 
     private void incializar() {

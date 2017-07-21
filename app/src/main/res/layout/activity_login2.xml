@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/raqueta"
     android:weightSum="10">
@@ -49,7 +50,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btn_login"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="5dp"
@@ -61,7 +62,7 @@
         android:textColor="#000000" />
 
     <RelativeLayout
-        android:id="@+id/google_container"
+        android:id="@+id/btn_signin_google"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -91,7 +92,7 @@
 
 
     <RelativeLayout
-        android:id="@+id/facebookContainer"
+        android:id="@+id/btn_facebook"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
