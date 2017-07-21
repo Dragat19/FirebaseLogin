@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         callbackManager = CallbackManager.Factory.create();
         Log.w(TAG, "Callback  " + callbackManager.toString());
 
+
         incializar();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -140,8 +141,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      **/
     private void SignInGoogleFirebase(GoogleSignInResult googleSignInResult) {
 
-        AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInResult.getSignInAccount().getIdToken(), null);
+
         if (googleSignInResult.isSuccess()) {
+            AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInResult.getSignInAccount().getIdToken(), null);
             firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -200,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * Registro con Facebook
      **/
     private void signInFacebookFirebase(AccessToken accessToken) {
+
         AuthCredential authCredential = FacebookAuthProvider.getCredential(accessToken.getToken());
 
         firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -243,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == SIGN_IN_GOOGLE_CODE) {
+        if (resultCode == SIGN_IN_GOOGLE_CODE) {
             GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             SignInGoogleFirebase(googleSignInResult);
         } else {
