@@ -50,25 +50,29 @@ public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnCo
         btnSingOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebaseAuth.signOut();
-                Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(@NonNull Status status) {
-                        if (status.isSuccess()){
-                            Intent i = new Intent(UserLogin.this, MainActivity.class);
-                            startActivity(i);
-                            finish();
-                        }else {
-                            Toast.makeText(UserLogin.this, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+            signOut();
+            }
+        });
+    }
 
-                if (LoginManager.getInstance() != null){
-                    LoginManager.getInstance().logOut();
+    private void signOut(){
+        firebaseAuth.signOut();
+        Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                if (status.isSuccess()){
+                    Intent i = new Intent(UserLogin.this, MainActivity.class);
+                    startActivity(i);
+                    finish();
+                }else {
+                    Toast.makeText(UserLogin.this, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        if (LoginManager.getInstance() != null){
+            LoginManager.getInstance().logOut();
+        }
     }
 
 
@@ -80,7 +84,7 @@ public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnCo
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     tvDataUser.setText("Id: "+ user.getUid()+"\r\n"+"Email: "+ user.getEmail());
-                    Picasso.with(UserLogin.this).load(user.getPhotoUrl()).centerCrop().into(imgPerfil);
+                    Picasso.with(UserLogin.this).load(user.getPhotoUrl()).into(imgPerfil);
                 } else {
                     Log.w(TAG, "onAuthStateChanged - Sign_out");
                 }
