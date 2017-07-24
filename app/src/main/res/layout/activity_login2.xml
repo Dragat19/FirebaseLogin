@@ -90,14 +90,19 @@
 
     </RelativeLayout>
 
-
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/btn_facebook"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+<!--
     <RelativeLayout
         android:id="@+id/btn_facebook"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
+        android:layout_weight="1"
         android:background="@drawable/facebook_backgroud">
 
         <TextView
@@ -118,7 +123,7 @@
             android:adjustViewBounds="true"
             android:src="@drawable/ic_facebook" />
 
-    </RelativeLayout>
+    </RelativeLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"

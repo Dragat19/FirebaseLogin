@@ -45,12 +45,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private static final int SIGN_IN_GOOGLE_CODE = 2;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private EditText etEmail, etPassword;
+    private TextInputLayout etEmail, etPassword;
     private Button btnLogin;
     private TextView btnSignUp;
     private GoogleApiClient googleApiClient;
-  //  private RelativeLayout signInGoogle;
-    private SignInButton signInGoogle;
+    private RelativeLayout signInGoogle;
+    //private SignInButton signInGoogle;
     private LoginButton btnFacebook;
     private CallbackManager callbackManager;
     private ImageView imgLogo;
@@ -58,37 +58,37 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        etEmail = (EditText) findViewById(R.id.login_email);
-        etPassword = (EditText) findViewById(R.id.login_password);
+        setContentView(R.layout.activity_login2);
+        etEmail = (TextInputLayout) findViewById(R.id.login_email);
+        etPassword = (TextInputLayout) findViewById(R.id.login_password);
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnSignUp = (TextView) findViewById(R.id.txSignup);
-        signInGoogle = (SignInButton) findViewById(R.id.btn_signin_google);
+        signInGoogle = (RelativeLayout) findViewById(R.id.btn_signin_google);
         btnFacebook = (LoginButton) findViewById(R.id.btn_facebook);
         imgLogo = (ImageView) findViewById(R.id.img_logo);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         Log.w(TAG, "Callback  " + callbackManager.toString());
 
-        /*Picasso.with(this).load("http://apps.playtown.com.ar/set/public/landing/assets/images/logo2.png")
+        Picasso.with(this).load("http://apps.playtown.com.ar/set/public/landing/assets/images/logo2.png")
                 .centerCrop()
                 .resize(250, 250)
-                .into(imgLogo);*/
+                .into(imgLogo);
+
         inicializar();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                login(etEmail.getText().toString(), etPassword.getText().toString());
+                login(etEmail.getEditText().getText().toString(), etPassword.getEditText().getText().toString());
             }
         });
-
-       /* btnSignUp.setOnClickListener(new View.OnClickListener() {
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Sign(etEmail.getText().toString(), etPassword.getText().toString());
+                Sign(etEmail.getEditText().getText().toString(), etPassword.getEditText().getText().toString());
             }
-        });         */
+        });
 
         signInGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,12 +98,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-      btnFacebook.setReadPermissions(Arrays.asList("email"));
+        btnFacebook.setReadPermissions(Arrays.asList("email"));
         btnFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.w(TAG, "Facebook Login Success Token:  " + loginResult.getAccessToken().getToken());
-                signInFacebookFirebase(loginResult.getAccessToken());
+               // signInFacebookFirebase(loginResult.getAccessToken());
             }
 
             @Override
@@ -150,10 +150,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * Login con Google Firebase
      **/
     private void signInGoogleFirebase(GoogleSignInResult googleSignInResult) {
-        // Log.d(TAG, "handleSignInResult:" + googleSignInResult.isSuccess());
+        Log.d(TAG, "handleSignInResult:" + googleSignInResult.isSuccess());
         if (googleSignInResult.isSuccess()) {
             AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInResult.getSignInAccount().getIdToken(), null);
-            firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(this,new OnCompleteListener<AuthResult>() {
+            firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {

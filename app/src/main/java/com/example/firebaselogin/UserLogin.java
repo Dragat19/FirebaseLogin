@@ -84,7 +84,7 @@ public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnCo
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     tvDataUser.setText("Id: "+ user.getUid()+"\r\n"+"Email: "+ user.getEmail());
-                    Picasso.with(UserLogin.this).load(user.getPhotoUrl()).into(imgPerfil);
+                    Picasso.with(UserLogin.this).load(user.getPhotoUrl()).placeholder(R.mipmap.ic_launcher).into(imgPerfil);
                 } else {
                     Log.w(TAG, "onAuthStateChanged - Sign_out");
                 }
