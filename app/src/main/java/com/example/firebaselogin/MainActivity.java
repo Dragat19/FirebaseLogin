@@ -19,6 +19,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -36,8 +37,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.squareup.picasso.Picasso;
+import com.sromku.simple.fb.Permission;
+import com.sromku.simple.fb.SimpleFacebook;
+import com.sromku.simple.fb.SimpleFacebookConfiguration;
+import com.sromku.simple.fb.listeners.OnLoginListener;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -48,12 +54,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private TextInputLayout etEmail, etPassword;
     private Button btnLogin;
     private TextView btnSignUp;
+    private ImageView imgLogo;
     private GoogleApiClient googleApiClient;
     private RelativeLayout signInGoogle;
-    //private SignInButton signInGoogle;
-    private LoginButton btnFacebook;
-    private CallbackManager callbackManager;
-    private ImageView imgLogo;
+
+    //Facebook
+    private SimpleFacebook mSimpleFacebook;
+    private RelativeLayout btnFacebook2;
+
+    Permission[] permissions = new Permission[] {
+            Permission.USER_PHOTOS,
+            Permission.EMAIL,
+            Permission.PUBLISH_ACTION
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,16 +77,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnSignUp = (TextView) findViewById(R.id.txSignup);
         signInGoogle = (RelativeLayout) findViewById(R.id.btn_signin_google);
-        btnFacebook = (LoginButton) findViewById(R.id.btn_facebook);
+        btnFacebook2 = (RelativeLayout) findViewById(R.id.btn_facebook);
         imgLogo = (ImageView) findViewById(R.id.img_logo);
         FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
-        Log.w(TAG, "Callback  " + callbackManager.toString());
+
+        SimpleFacebookConfiguration configuration = new SimpleFacebookConfiguration.Builder()
+                .setAppId(getString(R.string.app_id))
+                .setNamespace("SomosTenis")
+                .setPermissions(permissions)
+                .build();
+
+        SimpleFacebook.setConfiguration(configuration);
+
 
         Picasso.with(this).load("http://apps.playtown.com.ar/set/public/landing/assets/images/logo2.png")
                 .centerCrop()
                 .resize(250, 250)
                 .into(imgLogo);
+
 
         inicializar();
 
@@ -98,12 +119,51 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        btnFacebook.setReadPermissions(Arrays.asList("email"));
+        final OnLoginListener onLoginListener = new OnLoginListener() {
+
+            @Override
+            public void onLogin(String accessToken, List<Permission> acceptedPermissions, List<Permission> declinedPermissions) {
+                // change the state of the button or do whatever you want
+                Log.d(TAG, "Logged in: "+ accessToken);
+                signInFacebookFirebase(accessToken);
+
+            }
+
+            @Override
+            public void onCancel() {
+                // user canceled the dialog
+            }
+
+            @Override
+            public void onFail(String reason) {
+                // failed to login
+            }
+
+            @Override
+            public void onException(Throwable throwable) {
+                // exception from facebook
+            }
+
+        };
+
+        btnFacebook2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSimpleFacebook.login(onLoginListener);
+            }
+        });
+
+
+
+
+
+
+       /* btnFacebook.setReadPermissions(Arrays.asList("email"));
         btnFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.w(TAG, "Facebook Login Success Token:  " + loginResult.getAccessToken().getToken());
-               // signInFacebookFirebase(loginResult.getAccessToken());
+                signInFacebookFirebase(loginResult.getAccessToken());
             }
 
             @Override
@@ -116,10 +176,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 Log.w(TAG, "Facebook Error");
                 error.printStackTrace();
             }
-        });
+        });*/
     }
 
     private void inicializar() {
+
         firebaseAuth = FirebaseAuth.getInstance();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -210,9 +271,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     /**
      * Registro con Facebook
      **/
-    private void signInFacebookFirebase(AccessToken accessToken) {
+    private void signInFacebookFirebase(String accessToken) {
 
-        AuthCredential authCredential = FacebookAuthProvider.getCredential(accessToken.getToken());
+        AuthCredential authCredential = FacebookAuthProvider.getCredential(accessToken);
 
         firebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -224,13 +285,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     finish();
                 } else {
                     Toast.makeText(MainActivity.this, "Facebook Authentication Unsuccess", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(MainActivity.this, UserLogin.class);
-                    startActivity(i);
                 }
             }
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSimpleFacebook = SimpleFacebook.getInstance(this);
+    }
 
     @Override
     protected void onStart() {
@@ -246,12 +310,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -260,8 +318,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             signInGoogleFirebase(googleSignInResult);
         } else {
-            callbackManager.onActivityResult(requestCode, resultCode, data);
+            mSimpleFacebook.onActivityResult(requestCode, resultCode, data);
+            //callbackManager.onActivityResult(requestCode, resultCode, data);
         }
 
     }
+
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
 }
