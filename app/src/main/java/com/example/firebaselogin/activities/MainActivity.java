@@ -1,8 +1,10 @@
 package com.example.firebaselogin.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
@@ -21,10 +23,13 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        img = (ImageView)findViewById(R.id.splash_image);
+
         imageViewTarget = new GlideDrawableImageViewTarget(img, 1);
         Glide.with(this).load(R.drawable.splash).into(imageViewTarget);
 
         new Handler().postDelayed(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void run() {
 
@@ -35,7 +40,7 @@ public class MainActivity extends AppCompatActivity  {
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
             }
-        }, 2000);
+        }, 4000);
     }
 
 }
