@@ -1,4 +1,4 @@
-package com.example.firebaselogin;
+package com.example.firebaselogin.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.firebaselogin.R;
+import com.example.firebaselogin.utils.AuthenticationFirebase;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -28,10 +30,10 @@ import com.sromku.simple.fb.SimpleFacebook;
  * Created by albertsanchez on 19/7/17.
  */
 
-public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class UserLoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     //Flags
-    private static final String TAG = "UserLogin";
+    private static final String TAG = "UserLoginActivity";
 
     //Firebase
     private FirebaseAuth firebaseAuth;
@@ -64,8 +66,8 @@ public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnCo
         btnSingOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebase.logoutFacebok(UserLogin.this, mSimpleFacebook);
-                firebase.signOutFirebase(UserLogin.this, firebaseAuth, googleApiClient);
+                firebase.logoutFacebok(UserLoginActivity.this, mSimpleFacebook);
+                firebase.signOutFirebase(UserLoginActivity.this, firebaseAuth, googleApiClient);
             }
         });
     }
@@ -76,11 +78,11 @@ public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnCo
             @Override
             public void onResult(@NonNull Status status) {
                 if (status.isSuccess()) {
-                    Intent i = new Intent(UserLogin.this, MainActivity.class);
+                    Intent i = new Intent(UserLoginActivity.this, MainActivity.class);
                     startActivity(i);
                     finish();
                 } else {
-                    Toast.makeText(UserLogin.this, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UserLoginActivity.this, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -100,7 +102,7 @@ public class UserLogin extends AppCompatActivity implements GoogleApiClient.OnCo
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     tvDataUser.setText("Id: " + user.getUid() + "\r\n" + "Email: " + user.getEmail());
-                    Picasso.with(UserLogin.this).load(user.getPhotoUrl()).placeholder(R.mipmap.ic_launcher).into(imgPerfil);
+                    Picasso.with(UserLoginActivity.this).load(user.getPhotoUrl()).placeholder(R.mipmap.ic_launcher).into(imgPerfil);
                 } else {
                     Log.w(TAG, "onAuthStateChanged - Sign_out");
                 }

@@ -12,15 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.MainActivity">
 
         </activity>
 
-        <activity android:name=".UserLogin">
+        <activity android:name=".activities.UserLoginActivity">
 
         </activity>
 
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activities.SignUpActivity">
+
+        </activity>
+
+        <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,4 +1,4 @@
-package com.example.firebaselogin;
+package com.example.firebaselogin.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,6 +7,10 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.firebaselogin.R;
+import com.example.firebaselogin.activities.LoginActivity;
+import com.example.firebaselogin.activities.UserLoginActivity;
+import com.example.firebaselogin.activities.MainActivity;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -67,7 +71,7 @@ public class AuthenticationFirebase {
                 Log.d(TAG, "signInWithEmail:onComplete: " + task.isSuccessful());
                 if (task.isSuccessful()) {
                     Toast.makeText(ctx, "Login Authentication Success", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(ctx, UserLogin.class);
+                    Intent intent = new Intent(ctx, UserLoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     ctx.startActivity(intent);
                 } else {
@@ -106,7 +110,7 @@ public class AuthenticationFirebase {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
                         Toast.makeText(ctx, "Google SignIn success", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(ctx, UserLogin.class);
+                        Intent intent = new Intent(ctx, UserLoginActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         ctx.startActivity(intent);
                     } else {
@@ -133,7 +137,7 @@ public class AuthenticationFirebase {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(ctx, "Facebook Authentication Success", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(ctx, UserLogin.class);
+                            Intent intent = new Intent(ctx, UserLoginActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             ctx.startActivity(intent);
                         } else {
@@ -185,7 +189,7 @@ public class AuthenticationFirebase {
             @Override
             public void onResult(@NonNull Status status) {
                 if (status.isSuccess()){
-                    Intent intent = new Intent(ctx, MainActivity.class);
+                    Intent intent = new Intent(ctx, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     ctx.startActivity(intent);
 

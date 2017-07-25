@@ -1,10 +1,13 @@
-package com.example.firebaselogin;
+package com.example.firebaselogin.activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.firebaselogin.utils.AuthenticationFirebase;
+import com.example.firebaselogin.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -50,17 +55,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private SimpleFacebook mSimpleFacebook;
     private RelativeLayout btnFacebook;
 
-
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login2);
 
         //Cast
-        imgLogo = (ImageView)findViewById(R.id.img_logo);
-        etEmail = (TextInputLayout) findViewById(R.id.login_email);
-        etPassword = (TextInputLayout) findViewById(R.id.login_password);
+        imgLogo = (ImageView) findViewById(R.id.img_logo);
+        etEmail = (TextInputLayout) findViewById(R.id.login_email2);
+        etPassword = (TextInputLayout) findViewById(R.id.login_password2);
         btnLogin = (Button) findViewById(R.id.btn_login);
         btnSignUp = (TextView) findViewById(R.id.txSignup);
         btnGoogle = (RelativeLayout) findViewById(R.id.btn_signin_google);
@@ -74,26 +77,39 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
 
         /* Implementando View */
-        final String strEmail = etEmail.getEditText().getText().toString();
-        final String strPassword = etPassword.getEditText().getText().toString();
-
         Picasso.with(this).load("http://apps.playtown.com.ar/set/public/landing/assets/images/logo2.png")
-                        .centerCrop()
-                        .resize(250,250)
-                        .into(imgLogo);
+                .centerCrop()
+                .resize(250, 250)
+                .into(imgLogo);
 
         /* Listener */
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebase.loginEmail(LoginActivity.this,firebaseAuth,strEmail,strPassword);
+
+                String strEmail = etEmail.getEditText().getText().toString();
+                String strPassword = etPassword.getEditText().getText().toString();
+                firebase.loginEmail(LoginActivity.this, firebaseAuth, strEmail, strPassword);
+                  /* if (!validateEmail(strEmail)) {
+                    } else {
+                        if (!validatePass(strPassword)) {
+                        } else {
+
+                        }
+                    }*/
             }
         });
 
         btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View view) {
-                firebase.signEmail(LoginActivity.this,firebaseAuth,strEmail,strPassword);
+                //firebase.signEmail(LoginActivity.this, firebaseAuth, strEmail, strPassword);
+                Intent i = new Intent(LoginActivity.this, SignUpActivity.class);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(LoginActivity.this, imgLogo,"logo_login");
+                startActivity(i,options.toBundle());
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
         });
 
@@ -109,7 +125,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         btnFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebase.loginFacebook(LoginActivity.this,firebaseAuth,mSimpleFacebook);
+                firebase.loginFacebook(LoginActivity.this, firebaseAuth, mSimpleFacebook);
             }
         });
 
@@ -140,13 +156,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SIGN_IN_GOOGLE_CODE) {
             GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            firebase.signInGoogleFirebase(LoginActivity.this,firebaseAuth,googleSignInResult);
+            firebase.signInGoogleFirebase(LoginActivity.this, firebaseAuth, googleSignInResult);
         } else {
             mSimpleFacebook.onActivityResult(requestCode, resultCode, data);
         }
     }
 
-    public void initGoogle(){
+    public void initGoogle() {
 
         firebaseAuth = FirebaseAuth.getInstance();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -173,6 +189,24 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
+    }
+
+    private boolean validateEmail(String email) {
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Invalidate e-mail");
+            return false;
+        }
+        etEmail.setError(null);
+        return true;
+    }
+
+    private boolean validatePass(String pass) {
+        if (pass.isEmpty()) {
+            etPassword.setError("Empty Password");
+            return false;
+        }
+        etPassword.setError(null);
+        return true;
     }
 
     @Override

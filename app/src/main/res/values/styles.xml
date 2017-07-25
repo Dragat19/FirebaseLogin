@@ -18,4 +18,8 @@
         <item name="colorControlActivated">#96ff78</item>
     </style>
 
+    <style name="Error" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textColor">#D50000</item>
+    </style>
+
 </resources>
