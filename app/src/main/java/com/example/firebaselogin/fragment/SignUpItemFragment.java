@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.firebaselogin.R;
-import com.example.firebaselogin.model.Register;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -27,7 +26,6 @@ public class SignUpItemFragment extends Fragment {
     private int pageNumber;
     private TextInputLayout etName, etLasName, etEmail, etUsername, etPass, etPass2;
     private OnListener mCallback;
-    private Register signup;
 
     public static SignUpItemFragment newInstance(int page) {
         SignUpItemFragment fragment = new SignUpItemFragment();

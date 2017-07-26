@@ -32,11 +32,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
     //Flags
     private static final String TAG = "SignUpActivity";
 
-    //Firebase
-    private FirebaseAuth firebaseAuth;
-    private AuthenticationFirebase firebase;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
-
     //View and Viewpager
     private RelativeLayout btnNext;
     private ImageView imgLogo;
@@ -112,14 +107,9 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
 
     @Override
     public void onRegister(String pass) {
-        Log.d(TAG,"Registro "+attrs.get(0)+" "+attrs.get(1)+" "+attrs.get(2)+" "+attrs.get(3)+" "+pass);
-        SetApplication.authenticationFirebase.signEmail(this,attrs.get(2),pass);
+        Log.d(TAG, "Registro " + attrs.get(0) + " " + attrs.get(1) + " " + attrs.get(2) + " " + attrs.get(3) + " " + pass);
+        SetApplication.authenticationFirebase.signEmail(this, attrs.get(2), pass);
         finish();
-        /*Intent i = getIntent();
-        i.putExtra("email", attrs.get(2));
-        i.putExtra("pass", pass);
-        setResult(RESULT_OK,i);
-        finish();*/
     }
 
     public class SignUpPagerAdapter extends FragmentStatePagerAdapter {
@@ -162,11 +152,9 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
     private void previousPage() {
         int currentPage = viewPager.getCurrentItem();
         int previousPage = currentPage - 1;
-        tvNext.setText("Siguiente");
+        tvNext.setText(getString(R.string.btnNext_signup));
         viewPager.setCurrentItem(previousPage, true);
     }
-
-
 
 
     @Override
