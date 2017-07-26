@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">FirebaseLogin</string>
-    <string name="facebook_app_id">1410945205662926</string>
+    <string name="app_id">1388231864585944</string>
+    <string name="fb_login_protocol_scheme">fb1388231864585944</string>
+    <string name="e_mail_signup">E-mail</string>
+    <string name="name_signup">Name</string>
+    <string name="pass_signup">Password</string>
+    <string name="passconf_signup">Repeat password</string>
+    <string name="btnNext_signup">Next</string>
+    <string name="lastname_signup">Lastname</string>
+    <string name="username">Username</string>
 </resources>
