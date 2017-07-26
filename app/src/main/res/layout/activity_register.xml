@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/raqueta"
+    android:padding="15dp"
+    android:weightSum="10">
+
+
+    <LinearLayout
+        android:id="@+id/container_tvRegister"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registro"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:textSize="20sp"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/logo_signup"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:padding="15dp"
+        android:transitionName="logo_login" />
+
+
+    <com.example.firebaselogin.utils.CustomViewPager
+        android:id="@+id/signup_viewpager"
+        android:layout_width="match_parent"
+        android:touchscreenBlocksFocus="false"
+        android:layout_height="0dp"
+        android:layout_weight="4"/>
+
+
+    <RelativeLayout
+        android:id="@+id/btnNextPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/button_background"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/next_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="5dp"
+            android:text="@string/btnNext_signup"
+            android:textAllCaps="true"
+            android:textColor="#000000"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/next_text"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_arrow" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>
