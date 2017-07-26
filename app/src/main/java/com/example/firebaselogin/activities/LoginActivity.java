@@ -1,5 +1,6 @@
 package com.example.firebaselogin.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.firebaselogin.utils.AuthenticationFirebase;
 import com.example.firebaselogin.R;
@@ -23,6 +25,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
@@ -35,8 +40,10 @@ import com.sromku.simple.fb.SimpleFacebook;
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     //Flags
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "LoginActivity";
     private static final int SIGN_IN_GOOGLE_CODE = 1;
+    private final static int SIGNUP = 0;
+    private boolean logiado = false;
 
     //Firebase
     private FirebaseAuth firebaseAuth;
@@ -82,53 +89,80 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .resize(250, 250)
                 .into(imgLogo);
 
-        /* Listener */
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                String strEmail = etEmail.getEditText().getText().toString();
-                String strPassword = etPassword.getEditText().getText().toString();
-                firebase.loginEmail(LoginActivity.this, firebaseAuth, strEmail, strPassword);
-                  /* if (!validateEmail(strEmail)) {
+            /* Listener */
+            btnLogin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    String strEmail = etEmail.getEditText().getText().toString();
+                    String strPassword = etPassword.getEditText().getText().toString();
+                    if (!validateEmail(strEmail)) {
                     } else {
                         if (!validatePass(strPassword)) {
                         } else {
-
+                            firebase.loginEmail(LoginActivity.this, firebaseAuth, strEmail, strPassword);
+                            logiado = true;
                         }
-                    }*/
-            }
-        });
-
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-            @Override
-            public void onClick(View view) {
-                //firebase.signEmail(LoginActivity.this, firebaseAuth, strEmail, strPassword);
-                Intent i = new Intent(LoginActivity.this, SignUpActivity.class);
-                ActivityOptionsCompat options = ActivityOptionsCompat.
-                        makeSceneTransitionAnimation(LoginActivity.this, imgLogo,"logo_login");
-                startActivity(i,options.toBundle());
-                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            }
-        });
+                    }
+                }
+            });
 
 
-        btnGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-                startActivityForResult(intent, SIGN_IN_GOOGLE_CODE);
-            }
-        });
 
-        btnFacebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                firebase.loginFacebook(LoginActivity.this, firebaseAuth, mSimpleFacebook);
-            }
-        });
+            btnSignUp.setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(LoginActivity.this, SignUpActivity.class);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(LoginActivity.this, imgLogo, "logo_login");
+                    startActivityForResult(i,SIGNUP,options.toBundle());
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
+
+                    /*firebaseAuth.createUserWithEmailAndPassword(etEmail.getEditText().getText().toString(), etPassword.getEditText().getText().toString()).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            Log.d(TAG, "signInWithEmail:onComplete: " + task.isSuccessful());
+                            if (task.isSuccessful()) {
+                                Toast.makeText(LoginActivity.this, "Signup Success", Toast.LENGTH_SHORT).show();
+                                logiado = false;
+
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Signup Unsuccess", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });*/
+
+                }
+            });
+
+
+            btnGoogle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+                    startActivityForResult(intent, SIGN_IN_GOOGLE_CODE);
+                }
+            });
+
+            btnFacebook.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    firebase.loginFacebook(LoginActivity.this, firebaseAuth, mSimpleFacebook);
+                }
+            });
+
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(0, 0);
+        super.onBackPressed();
     }
 
     @Override
@@ -154,11 +188,33 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SIGN_IN_GOOGLE_CODE) {
-            GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            firebase.signInGoogleFirebase(LoginActivity.this, firebaseAuth, googleSignInResult);
-        } else {
-            mSimpleFacebook.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case SIGN_IN_GOOGLE_CODE:
+                GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                firebase.signInGoogleFirebase(LoginActivity.this, firebaseAuth, googleSignInResult);
+                break;
+            case SIGNUP:
+                String strEmail = data.getExtras().getString("email");
+                String strPass = data.getExtras().getString("pass");
+                Log.d(TAG,"SignUp"+strEmail+" "+strPass);
+                firebaseAuth.createUserWithEmailAndPassword(strEmail, strPass).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithEmail:onComplete: " + task.isSuccessful());
+                        if (task.isSuccessful()) {
+                            Toast.makeText(LoginActivity.this, "Signup Success", Toast.LENGTH_SHORT).show();
+                            logiado = false;
+
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Signup Unsuccess", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                break;
+            default:
+                mSimpleFacebook.onActivityResult(requestCode, resultCode, data);
+                break;
         }
     }
 
@@ -169,12 +225,22 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getUid());
-                    Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getEmail());
-                } else {
-                    Log.w(TAG, "onAuthStateChanged - Sign_out");
+                if (logiado == true){
+                    if (user != null) {
+                        Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getUid());
+                        Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getEmail());
+                        Intent intent = new Intent(LoginActivity.this, UserLoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                        logiado = false;
+                    } else {
+                        Log.w(TAG, "onAuthStateChanged - Sign_out");
+                        logiado = false;
+                    }
+                }else {
+                    Log.w(TAG, "Usuario ya se registro tienes que logiar");
                 }
+
             }
         };
 

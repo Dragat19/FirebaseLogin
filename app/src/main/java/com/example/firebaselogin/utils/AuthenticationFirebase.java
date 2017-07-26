@@ -22,6 +22,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
@@ -88,8 +89,10 @@ public class AuthenticationFirebase {
         firebaseAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener((Activity) ctx, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d(TAG, "signInWithEmail:onComplete: " + task.isSuccessful());
                 if (task.isSuccessful()) {
                     Toast.makeText(ctx, "Signup Success", Toast.LENGTH_SHORT).show();
+
                 } else {
                     Toast.makeText(ctx, "Signup Unsuccess", Toast.LENGTH_SHORT).show();
                 }

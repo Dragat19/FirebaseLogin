@@ -1,5 +1,6 @@
 package com.example.firebaselogin.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,10 +13,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.firebaselogin.utils.AuthenticationFirebase;
-import com.example.firebaselogin.utils.CustomViewPager;
 import com.example.firebaselogin.R;
 import com.example.firebaselogin.fragment.SignUpItemFragment;
+import com.example.firebaselogin.utils.AuthenticationFirebase;
+import com.example.firebaselogin.utils.CustomViewPager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
@@ -33,6 +34,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
     //Firebase
     private FirebaseAuth firebaseAuth;
     private AuthenticationFirebase firebase;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
 
     //View and Viewpager
     private RelativeLayout btnNext;
@@ -53,7 +55,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
         imgLogo = (ImageView) findViewById(R.id.logo_signup);
         btnNext = (RelativeLayout) findViewById(R.id.btnNextPager);
         tvNext = (TextView) findViewById(R.id.next_text);
-        firebaseAuth = FirebaseAuth.getInstance();
 
         Picasso.with(this).load("http://apps.playtown.com.ar/set/public/landing/assets/images/logo2.png")
                 .centerCrop()
@@ -111,7 +112,11 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
     @Override
     public void onRegister(String pass) {
         Log.d(TAG,"Registro "+attrs.get(0)+" "+attrs.get(1)+" "+attrs.get(2)+" "+attrs.get(3)+" "+pass);
-        firebase.signEmail(SignUpActivity.this,firebaseAuth,attrs.get(2),pass);
+
+        Intent i = getIntent();
+        i.putExtra("email", attrs.get(2));
+        i.putExtra("pass", pass);
+        setResult(RESULT_OK,i);
         finish();
     }
 
@@ -145,9 +150,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
         int totalPages = viewPager.getAdapter().getCount();
 
         int nextPage = currentPage + 1;
-        if (nextPage == 1) {
-
-        }
         if (nextPage == 2) {
             tvNext.setText("Register");
         }
@@ -161,6 +163,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
         tvNext.setText("Siguiente");
         viewPager.setCurrentItem(previousPage, true);
     }
+
+
 
 
     @Override

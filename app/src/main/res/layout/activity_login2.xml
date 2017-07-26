@@ -12,17 +12,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
-        android:layout_weight="4"
-        android:transitionName="logo_login"
-        android:padding="20dp" />
+        android:layout_weight="3"
+        android:transitionName="logo_login" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="3"
         android:orientation="vertical"
+        android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingLeft="10dp">
+        android:gravity="center">
 
 
         <android.support.design.widget.TextInputLayout

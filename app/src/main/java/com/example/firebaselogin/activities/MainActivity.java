@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        img = (ImageView)findViewById(R.id.splash_image);
+        img = (ImageView)findViewById(R.id.img_logo);
 
         imageViewTarget = new GlideDrawableImageViewTarget(img, 1);
         Glide.with(this).load(R.drawable.splash).into(imageViewTarget);
@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity  {
                         makeSceneTransitionAnimation(MainActivity.this, img,"logo_login");
                 startActivity(intent,options.toBundle());
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                finish();
 
             }
         }, 4000);

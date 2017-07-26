@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.firebaselogin.R;
 import com.example.firebaselogin.model.Register;
@@ -112,7 +111,6 @@ public class SignUpItemFragment extends Fragment {
                 } else {
                     Log.d("passs", "correcto");
                     etPass2.setError(null);
-                    Toast.makeText(getContext(), "Registering user", Toast.LENGTH_SHORT).show();
                     mCallback.onRegister(password);
                 }
             }
