@@ -1,6 +1,5 @@
 package com.example.firebaselogin.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,8 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.firebaselogin.utils.AuthenticationFirebase;
 import com.example.firebaselogin.R;
+import com.example.firebaselogin.SetApplication;
+import com.example.firebaselogin.utils.AuthenticationFirebase;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -37,19 +37,14 @@ import com.sromku.simple.fb.SimpleFacebook;
  * Created by albertsanchez on 21/7/17.
  */
 
-public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener , FirebaseAuth.AuthStateListener {
 
     //Flags
     private static final String TAG = "LoginActivity";
     private static final int SIGN_IN_GOOGLE_CODE = 1;
-    private final static int SIGNUP = 0;
-    private boolean logiado = false;
 
     //Firebase
-    private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private GoogleApiClient googleApiClient;
-    private AuthenticationFirebase firebase;
 
     //View
     private ImageView imgLogo;
@@ -76,11 +71,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         btnGoogle = (RelativeLayout) findViewById(R.id.btn_signin_google);
         btnFacebook = (RelativeLayout) findViewById(R.id.btn_facebook);
 
-        /* Inicializacion Facebook */
-        firebase = new AuthenticationFirebase(this);
-
-        /* Inicializacion Google */
-        initGoogle();
+        /* Inicializacion Firebase */
+        initFirebase();
 
 
         /* Implementando View */
@@ -90,72 +82,52 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .into(imgLogo);
 
 
-            /* Listener */
-            btnLogin.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+        /* Listener */
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                    String strEmail = etEmail.getEditText().getText().toString();
-                    String strPassword = etPassword.getEditText().getText().toString();
-                    if (!validateEmail(strEmail)) {
+                String strEmail = etEmail.getEditText().getText().toString();
+                String strPassword = etPassword.getEditText().getText().toString();
+                if (!validateEmail(strEmail)) {
+                } else {
+                    if (!validatePass(strPassword)) {
                     } else {
-                        if (!validatePass(strPassword)) {
-                        } else {
-                            firebase.loginEmail(LoginActivity.this, firebaseAuth, strEmail, strPassword);
-                            logiado = true;
-                        }
+                        SetApplication.authenticationFirebase.loginEmail(LoginActivity.this, strEmail, strPassword);
                     }
                 }
-            });
+            }
+        });
 
 
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(LoginActivity.this, SignUpActivity.class);
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(LoginActivity.this, imgLogo, "logo_login");
+                startActivity(i, options.toBundle());
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
-            btnSignUp.setOnClickListener(new View.OnClickListener() {
-                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(LoginActivity.this, SignUpActivity.class);
-                    ActivityOptionsCompat options = ActivityOptionsCompat.
-                            makeSceneTransitionAnimation(LoginActivity.this, imgLogo, "logo_login");
-                    startActivityForResult(i,SIGNUP,options.toBundle());
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
-
-                    /*firebaseAuth.createUserWithEmailAndPassword(etEmail.getEditText().getText().toString(), etPassword.getEditText().getText().toString()).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.d(TAG, "signInWithEmail:onComplete: " + task.isSuccessful());
-                            if (task.isSuccessful()) {
-                                Toast.makeText(LoginActivity.this, "Signup Success", Toast.LENGTH_SHORT).show();
-                                logiado = false;
-
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Signup Unsuccess", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });*/
-
-                }
-            });
+            }
+        });
 
 
-            btnGoogle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-                    startActivityForResult(intent, SIGN_IN_GOOGLE_CODE);
-                }
-            });
+        btnGoogle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = Auth.GoogleSignInApi.getSignInIntent(SetApplication.authenticationFirebase.googleApiClient);
+                startActivityForResult(intent, SIGN_IN_GOOGLE_CODE);
+            }
+        });
 
-            btnFacebook.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    firebase.loginFacebook(LoginActivity.this, firebaseAuth, mSimpleFacebook);
-                }
-            });
-
-
-
+        btnFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SetApplication.authenticationFirebase.loginFacebook(LoginActivity.this, mSimpleFacebook);
+            }
+        });
     }
 
     @Override
@@ -174,16 +146,26 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     protected void onStart() {
         super.onStart();
-        firebaseAuth.addAuthStateListener(mAuthStateListener);
+        SetApplication.authenticationFirebase.addAuthStateListener(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mAuthStateListener != null) {
-            firebaseAuth.removeAuthStateListener(mAuthStateListener);
-        }
+        SetApplication.authenticationFirebase.removeAuthStateListener(this);
+
     }
+
+    public void initFirebase() {
+
+        //Inicializacion de firebase
+        onAuthStateChanged(SetApplication.authenticationFirebase.firebaseAuth);
+
+        //Inicializacion de Google
+        SetApplication.authenticationFirebase.listenerInitGoggle(this,this);
+
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -192,70 +174,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         switch (requestCode) {
             case SIGN_IN_GOOGLE_CODE:
                 GoogleSignInResult googleSignInResult = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                firebase.signInGoogleFirebase(LoginActivity.this, firebaseAuth, googleSignInResult);
+                SetApplication.authenticationFirebase.signInGoogleFirebase(LoginActivity.this, googleSignInResult);
                 break;
-            case SIGNUP:
-                String strEmail = data.getExtras().getString("email");
-                String strPass = data.getExtras().getString("pass");
-                Log.d(TAG,"SignUp"+strEmail+" "+strPass);
-                firebaseAuth.createUserWithEmailAndPassword(strEmail, strPass).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete: " + task.isSuccessful());
-                        if (task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Signup Success", Toast.LENGTH_SHORT).show();
-                            logiado = false;
 
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Signup Unsuccess", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                break;
             default:
                 mSimpleFacebook.onActivityResult(requestCode, resultCode, data);
                 break;
         }
     }
 
-    public void initGoogle() {
-
-        firebaseAuth = FirebaseAuth.getInstance();
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (logiado == true){
-                    if (user != null) {
-                        Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getUid());
-                        Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getEmail());
-                        Intent intent = new Intent(LoginActivity.this, UserLoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                        logiado = false;
-                    } else {
-                        Log.w(TAG, "onAuthStateChanged - Sign_out");
-                        logiado = false;
-                    }
-                }else {
-                    Log.w(TAG, "Usuario ya se registro tienes que logiar");
-                }
-
-            }
-        };
-
-        //Inicializacion de Google
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-    }
 
     private boolean validateEmail(String email) {
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -278,5 +205,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user != null) {
+            Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getUid());
+            Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getEmail());
+            Intent intent = new Intent(LoginActivity.this, UserLoginActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            Log.w(TAG, "onAuthStateChanged - Sign_out");
+        }
     }
 }

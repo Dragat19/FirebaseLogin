@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.firebaselogin.R;
+import com.example.firebaselogin.SetApplication;
 import com.example.firebaselogin.fragment.SignUpItemFragment;
 import com.example.firebaselogin.utils.AuthenticationFirebase;
 import com.example.firebaselogin.utils.CustomViewPager;
@@ -112,12 +113,13 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
     @Override
     public void onRegister(String pass) {
         Log.d(TAG,"Registro "+attrs.get(0)+" "+attrs.get(1)+" "+attrs.get(2)+" "+attrs.get(3)+" "+pass);
-
-        Intent i = getIntent();
+        SetApplication.authenticationFirebase.signEmail(this,attrs.get(2),pass);
+        finish();
+        /*Intent i = getIntent();
         i.putExtra("email", attrs.get(2));
         i.putExtra("pass", pass);
         setResult(RESULT_OK,i);
-        finish();
+        finish();*/
     }
 
     public class SignUpPagerAdapter extends FragmentStatePagerAdapter {

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.firebaselogin.R;
+import com.example.firebaselogin.SetApplication;
 import com.example.firebaselogin.utils.AuthenticationFirebase;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.Auth;
@@ -30,14 +31,13 @@ import com.sromku.simple.fb.SimpleFacebook;
  * Created by albertsanchez on 19/7/17.
  */
 
-public class UserLoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class UserLoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, FirebaseAuth.AuthStateListener {
 
     //Flags
     private static final String TAG = "UserLoginActivity";
 
     //Firebase
     private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private GoogleApiClient googleApiClient;
     private AuthenticationFirebase firebase;
 
@@ -66,15 +66,16 @@ public class UserLoginActivity extends AppCompatActivity implements GoogleApiCli
         btnSingOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebase.logoutFacebok(UserLoginActivity.this, mSimpleFacebook);
-                firebase.signOutFirebase(UserLoginActivity.this, firebaseAuth, googleApiClient);
+                SetApplication.authenticationFirebase.logoutFacebok(UserLoginActivity.this, mSimpleFacebook);
+                SetApplication.authenticationFirebase.signOutFirebase(UserLoginActivity.this);
             }
         });
     }
 
     private void signOut() {
         firebaseAuth.signOut();
-        Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
+
+        Auth.GoogleSignInApi.signOut(SetApplication.authenticationFirebase.googleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(@NonNull Status status) {
                 if (status.isSuccess()) {
@@ -87,38 +88,16 @@ public class UserLoginActivity extends AppCompatActivity implements GoogleApiCli
             }
         });
 
-        if (LoginManager.getInstance() != null) {
-            LoginManager.getInstance().logOut();
-        }
     }
 
 
     public void initGoogle() {
 
-        firebaseAuth = FirebaseAuth.getInstance();
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    tvDataUser.setText("Id: " + user.getUid() + "\r\n" + "Email: " + user.getEmail());
-                    Picasso.with(UserLoginActivity.this).load(user.getPhotoUrl()).placeholder(R.mipmap.ic_launcher).into(imgPerfil);
-                } else {
-                    Log.w(TAG, "onAuthStateChanged - Sign_out");
-                }
-            }
-        };
+        //Inicializacion de Firebase
+        onAuthStateChanged(SetApplication.authenticationFirebase.firebaseAuth);
 
         //Inicializacion de Google
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+        SetApplication.authenticationFirebase.listenerInitGoggle(this,this);
 
     }
 
@@ -132,19 +111,28 @@ public class UserLoginActivity extends AppCompatActivity implements GoogleApiCli
     @Override
     protected void onStart() {
         super.onStart();
-        firebaseAuth.addAuthStateListener(mAuthStateListener);
+        SetApplication.authenticationFirebase.addAuthStateListener(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mAuthStateListener != null) {
-            firebaseAuth.removeAuthStateListener(mAuthStateListener);
-        }
+        SetApplication.authenticationFirebase.removeAuthStateListener(this);
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user != null) {
+            tvDataUser.setText("Id: " + user.getUid() + "\r\n" + "Email: " + user.getEmail());
+            Picasso.with(UserLoginActivity.this).load(user.getPhotoUrl()).placeholder(R.mipmap.ic_launcher).into(imgPerfil);
+        } else {
+            Log.w(TAG, "onAuthStateChanged - Sign_out");
+        }
     }
 }

@@ -4,14 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.firebaselogin.R;
 import com.example.firebaselogin.activities.LoginActivity;
 import com.example.firebaselogin.activities.UserLoginActivity;
-import com.example.firebaselogin.activities.MainActivity;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -38,17 +39,22 @@ import java.util.List;
 
 public class AuthenticationFirebase {
 
+    public FirebaseAuth firebaseAuth;
+    public GoogleSignInOptions gso;
+    public GoogleApiClient googleApiClient;
+    private static AuthenticationFirebase instance;
+
     private static Permission[] permissions = new Permission[]{
             Permission.USER_PHOTOS,
             Permission.EMAIL,
             Permission.PUBLISH_ACTION
     };
 
-    private Context ctx;
+
     private static final String TAG = "AuthenticationFirebase";
 
     public AuthenticationFirebase(Context ctx) {
-        this.ctx = ctx;
+
 
         SimpleFacebookConfiguration configuration = new SimpleFacebookConfiguration.Builder()
                 .setAppId(ctx.getString(R.string.app_id))
@@ -58,13 +64,20 @@ public class AuthenticationFirebase {
 
         SimpleFacebook.setConfiguration(configuration);
 
+        firebaseAuth = FirebaseAuth.getInstance();
     }
 
+    public static AuthenticationFirebase getInstance(Context ctx) {
+        if (instance == null) {
+            instance = new AuthenticationFirebase(ctx);
+        }
+        return instance;
+    }
 
     /**
      * Login con Email Firebase
      **/
-    public static void loginEmail(final Context ctx, FirebaseAuth firebaseAuth, String Email, String Password) {
+    public void loginEmail(final Context ctx, String Email, String Password) {
 
         firebaseAuth.signInWithEmailAndPassword(Email, Password).addOnCompleteListener((Activity) ctx, new OnCompleteListener<AuthResult>() {
             @Override
@@ -85,7 +98,7 @@ public class AuthenticationFirebase {
     /**
      * Registro con Email Firebase
      **/
-    public static void signEmail(final Context ctx, FirebaseAuth firebaseAuth, String Email, String Password) {
+    public void signEmail(final Context ctx, String Email, String Password) {
         firebaseAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener((Activity) ctx, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -104,7 +117,7 @@ public class AuthenticationFirebase {
     /**
      * Registro Google Firebase
      **/
-    public static void signInGoogleFirebase(final Context ctx, FirebaseAuth firebaseAuth, GoogleSignInResult googleSignInResult) {
+    public void signInGoogleFirebase(final Context ctx, GoogleSignInResult googleSignInResult) {
         Log.d(TAG, "handleSignInResult:" + googleSignInResult.isSuccess());
         if (googleSignInResult.isSuccess()) {
             AuthCredential authCredential = GoogleAuthProvider.getCredential(googleSignInResult.getSignInAccount().getIdToken(), null);
@@ -129,7 +142,7 @@ public class AuthenticationFirebase {
     /**
      * Registro con Facebook
      **/
-    public static void loginFacebook(final Context ctx, final FirebaseAuth firebaseAuth, final SimpleFacebook simpleFacebook) {
+    public void loginFacebook(final Context ctx, final SimpleFacebook simpleFacebook) {
         simpleFacebook.login(new OnLoginListener() {
             @Override
             public void onLogin(String accessToken, List<Permission> acceptedPermissions, List<Permission> declinedPermissions) {
@@ -173,7 +186,7 @@ public class AuthenticationFirebase {
     /**
      * LogOut Facebook
      **/
-    public static void logoutFacebok(final Context context, SimpleFacebook simpleFacebook) {
+    public void logoutFacebok(final Context context, SimpleFacebook simpleFacebook) {
         simpleFacebook.logout(new OnLogoutListener() {
             @Override
             public void onLogout() {
@@ -186,21 +199,44 @@ public class AuthenticationFirebase {
     /**
      * SignOut con Firebase
      **/
-    public static void signOutFirebase(final Context ctx, FirebaseAuth firebaseAuth,GoogleApiClient googleApiClient){
+    public void signOutFirebase(final Context ctx) {
         firebaseAuth.signOut();
         Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(@NonNull Status status) {
-                if (status.isSuccess()){
+                if (status.isSuccess()) {
                     Intent intent = new Intent(ctx, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     ctx.startActivity(intent);
 
-                }else {
+                } else {
                     Toast.makeText(ctx, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    public void addAuthStateListener(FirebaseAuth.AuthStateListener listener) {
+        firebaseAuth.addAuthStateListener(listener);
+    }
+
+    public void removeAuthStateListener(FirebaseAuth.AuthStateListener listener) {
+        firebaseAuth.removeAuthStateListener(listener);
+    }
+
+
+    public void listenerInitGoggle(Context ctx,GoogleApiClient.OnConnectionFailedListener listener){
+
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(ctx.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleApiClient = new GoogleApiClient.Builder(ctx)
+                .enableAutoManage((FragmentActivity) ctx,listener)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
     }
 
 }
