@@ -43,9 +43,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final String TAG = "LoginActivity";
     private static final int SIGN_IN_GOOGLE_CODE = 1;
 
-    //Firebase
-    private GoogleApiClient googleApiClient;
-
     //View
     private ImageView imgLogo;
     private TextInputLayout etEmail, etPassword;

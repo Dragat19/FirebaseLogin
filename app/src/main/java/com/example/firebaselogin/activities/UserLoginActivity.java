@@ -1,6 +1,5 @@
 package com.example.firebaselogin.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,18 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.firebaselogin.R;
 import com.example.firebaselogin.SetApplication;
-import com.example.firebaselogin.utils.AuthenticationFirebase;
-import com.facebook.login.LoginManager;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
@@ -35,11 +27,6 @@ public class UserLoginActivity extends AppCompatActivity implements GoogleApiCli
 
     //Flags
     private static final String TAG = "UserLoginActivity";
-
-    //Firebase
-    private FirebaseAuth firebaseAuth;
-    private GoogleApiClient googleApiClient;
-    private AuthenticationFirebase firebase;
 
     private SimpleFacebook mSimpleFacebook;
 
@@ -66,30 +53,12 @@ public class UserLoginActivity extends AppCompatActivity implements GoogleApiCli
         btnSingOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 SetApplication.authenticationFirebase.logoutFacebok(UserLoginActivity.this, mSimpleFacebook);
                 SetApplication.authenticationFirebase.signOutFirebase(UserLoginActivity.this);
             }
         });
     }
-
-    private void signOut() {
-        firebaseAuth.signOut();
-
-        Auth.GoogleSignInApi.signOut(SetApplication.authenticationFirebase.googleApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                if (status.isSuccess()) {
-                    Intent i = new Intent(UserLoginActivity.this, MainActivity.class);
-                    startActivity(i);
-                    finish();
-                } else {
-                    Toast.makeText(UserLoginActivity.this, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-    }
-
 
     public void initGoogle() {
 

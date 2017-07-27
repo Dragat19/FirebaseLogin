@@ -88,6 +88,7 @@ public class AuthenticationFirebase {
                     Intent intent = new Intent(ctx, UserLoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     ctx.startActivity(intent);
+                    ((Activity) ctx).finish();
                 } else {
                     Toast.makeText(ctx, "Login Authentication Unsuccess", Toast.LENGTH_SHORT).show();
                 }
@@ -129,6 +130,7 @@ public class AuthenticationFirebase {
                         Intent intent = new Intent(ctx, UserLoginActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         ctx.startActivity(intent);
+                        ((Activity) ctx).finish();
                     } else {
                         Toast.makeText(ctx, "Google Unsuccess", Toast.LENGTH_SHORT).show();
                     }
@@ -156,6 +158,7 @@ public class AuthenticationFirebase {
                             Intent intent = new Intent(ctx, UserLoginActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             ctx.startActivity(intent);
+                            ((Activity) ctx).finish();
                         } else {
                             Toast.makeText(ctx, "Facebook Authentication Unsuccess", Toast.LENGTH_SHORT).show();
                         }
@@ -208,6 +211,7 @@ public class AuthenticationFirebase {
                     Intent intent = new Intent(ctx, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     ctx.startActivity(intent);
+                    ((Activity) ctx).finish();
 
                 } else {
                     Toast.makeText(ctx, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();

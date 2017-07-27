@@ -32,11 +32,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
     //Flags
     private static final String TAG = "SignUpActivity";
 
-    //Firebase
-    private FirebaseAuth firebaseAuth;
-    private AuthenticationFirebase firebase;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
-
     //View and Viewpager
     private RelativeLayout btnNext;
     private ImageView imgLogo;
@@ -162,7 +157,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
     private void previousPage() {
         int currentPage = viewPager.getCurrentItem();
         int previousPage = currentPage - 1;
-        tvNext.setText("Siguiente");
+        tvNext.setText(getString(R.string.btnNext_signup));
         viewPager.setCurrentItem(previousPage, true);
     }
 
