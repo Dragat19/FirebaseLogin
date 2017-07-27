@@ -121,7 +121,9 @@ public class SignUpActivity extends BaseActivity implements SignUpItemFragment.O
     }
 
 
-    /** Callback **/
+    /**
+     * Callback
+     **/
     @Override
     public void onRegister(String pass) {
         Log.d(TAG, "Registro " + attrs.get(0) + " " + attrs.get(1) + " " + attrs.get(2) + " " + attrs.get(3) + " " + pass);
@@ -129,7 +131,9 @@ public class SignUpActivity extends BaseActivity implements SignUpItemFragment.O
         finish();
     }
 
-    /** Metodos Implementados **/
+    /**
+     * Metodos Implementados
+     **/
     private void nextPage() {
 
         int currentPage = viewPager.getCurrentItem();
@@ -150,7 +154,6 @@ public class SignUpActivity extends BaseActivity implements SignUpItemFragment.O
         viewPager.setCurrentItem(previousPage, true);
 
     }
-
 
 
 }
