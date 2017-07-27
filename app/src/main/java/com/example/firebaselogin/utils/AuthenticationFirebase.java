@@ -76,6 +76,23 @@ public class AuthenticationFirebase {
     }
 
     /**
+     * Inicializacion de Google
+     **/
+    public void initGoogle(Context ctx,GoogleApiClient.OnConnectionFailedListener listener){
+
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(ctx.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleApiClient = new GoogleApiClient.Builder(ctx)
+                .enableAutoManage((FragmentActivity) ctx,listener)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+    }
+
+    /**
      * Login con Email Firebase
      **/
     public void loginEmail(final Context ctx, String Email, String Password) {
@@ -227,21 +244,6 @@ public class AuthenticationFirebase {
 
     public void removeAuthStateListener(FirebaseAuth.AuthStateListener listener) {
         firebaseAuth.removeAuthStateListener(listener);
-    }
-
-
-    public void listenerInitGoggle(Context ctx,GoogleApiClient.OnConnectionFailedListener listener){
-
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(ctx.getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-
-        googleApiClient = new GoogleApiClient.Builder(ctx)
-                .enableAutoManage((FragmentActivity) ctx,listener)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
     }
 
 }

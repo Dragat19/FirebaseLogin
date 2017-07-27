@@ -45,10 +45,9 @@ public class UserLoginActivity extends BaseActivity implements GoogleApiClient.O
         onAuthStateChanged(SetApplication.authenticationFirebase.firebaseAuth);
 
         //Inicializacion de Google
-        SetApplication.authenticationFirebase.listenerInitGoggle(this,this);
+        SetApplication.authenticationFirebase.initGoogle(this, this);
 
     }
-
 
 
     @Override
@@ -61,13 +60,14 @@ public class UserLoginActivity extends BaseActivity implements GoogleApiClient.O
 
     @Override
     protected void initListeners() {
-         /* Listener */
+
         btnSingOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 SetApplication.authenticationFirebase.logoutFacebok(UserLoginActivity.this);
                 SetApplication.authenticationFirebase.signOutFirebase(UserLoginActivity.this);
+
             }
         });
 
@@ -92,6 +92,9 @@ public class UserLoginActivity extends BaseActivity implements GoogleApiClient.O
         SetApplication.authenticationFirebase.removeAuthStateListener(this);
     }
 
+    /**
+     * Callback
+     **/
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 

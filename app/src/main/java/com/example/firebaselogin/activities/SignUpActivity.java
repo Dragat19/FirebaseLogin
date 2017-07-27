@@ -61,7 +61,7 @@ public class SignUpActivity extends BaseActivity implements SignUpItemFragment.O
 
     @Override
     protected void initViews() {
-        //Cast
+
         viewPager = (CustomViewPager) findViewById(R.id.signup_viewpager);
         imgLogo = (ImageView) findViewById(R.id.logo_signup);
         btnNext = (RelativeLayout) findViewById(R.id.btnNextPager);
@@ -107,6 +107,7 @@ public class SignUpActivity extends BaseActivity implements SignUpItemFragment.O
 
             }
         });
+
     }
 
     @Override
@@ -130,6 +131,7 @@ public class SignUpActivity extends BaseActivity implements SignUpItemFragment.O
 
     /** Metodos Implementados **/
     private void nextPage() {
+
         int currentPage = viewPager.getCurrentItem();
         int totalPages = viewPager.getAdapter().getCount();
 
@@ -137,15 +139,16 @@ public class SignUpActivity extends BaseActivity implements SignUpItemFragment.O
         if (nextPage == 2) {
             tvNext.setText("Register");
         }
-
         viewPager.setCurrentItem(nextPage, true);
     }
 
     private void previousPage() {
+
         int currentPage = viewPager.getCurrentItem();
         int previousPage = currentPage - 1;
         tvNext.setText(getString(R.string.btnNext_signup));
         viewPager.setCurrentItem(previousPage, true);
+
     }
 
 

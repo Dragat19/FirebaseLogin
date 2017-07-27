@@ -53,13 +53,11 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         onAuthStateChanged(SetApplication.authenticationFirebase.firebaseAuth);
 
         //Inicializacion de Google
-        SetApplication.authenticationFirebase.listenerInitGoggle(this, this);
+        SetApplication.authenticationFirebase.initGoogle(this, this);
 
         initViews();
-
         initListeners();
 
-        /* Implementando View */
         Picasso.with(this).load("http://apps.playtown.com.ar/set/public/landing/assets/images/logo2.png")
                 .centerCrop()
                 .resize(250, 250)
