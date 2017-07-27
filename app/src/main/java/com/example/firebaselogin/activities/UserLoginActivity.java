@@ -3,7 +3,6 @@ package com.example.firebaselogin.activities;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,12 +22,10 @@ import com.sromku.simple.fb.SimpleFacebook;
  * Created by albertsanchez on 19/7/17.
  */
 
-public class UserLoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, FirebaseAuth.AuthStateListener {
+public class UserLoginActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, FirebaseAuth.AuthStateListener {
 
     //Flags
     private static final String TAG = "UserLoginActivity";
-
-    private SimpleFacebook mSimpleFacebook;
 
     //View
     private TextView tvDataUser;
@@ -41,26 +38,8 @@ public class UserLoginActivity extends AppCompatActivity implements GoogleApiCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_login);
 
-        //Cast
-        tvDataUser = (TextView) findViewById(R.id.data_user);
-        btnSingOut = (Button) findViewById(R.id.btn_signout);
-        imgPerfil = (ImageView) findViewById(R.id.imgPhoto);
-
-        /* Inicializacion Google */
-        initGoogle();
-
-        /* Listener */
-        btnSingOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                SetApplication.authenticationFirebase.logoutFacebok(UserLoginActivity.this, mSimpleFacebook);
-                SetApplication.authenticationFirebase.signOutFirebase(UserLoginActivity.this);
-            }
-        });
-    }
-
-    public void initGoogle() {
+        initViews();
+        initListeners();
 
         //Inicializacion de Firebase
         onAuthStateChanged(SetApplication.authenticationFirebase.firebaseAuth);
@@ -70,10 +49,34 @@ public class UserLoginActivity extends AppCompatActivity implements GoogleApiCli
 
     }
 
+
+
+    @Override
+    protected void initViews() {
+        //Cast
+        tvDataUser = (TextView) findViewById(R.id.data_user);
+        btnSingOut = (Button) findViewById(R.id.btn_signout);
+        imgPerfil = (ImageView) findViewById(R.id.imgPhoto);
+    }
+
+    @Override
+    protected void initListeners() {
+         /* Listener */
+        btnSingOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                SetApplication.authenticationFirebase.logoutFacebok(UserLoginActivity.this);
+                SetApplication.authenticationFirebase.signOutFirebase(UserLoginActivity.this);
+            }
+        });
+
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        mSimpleFacebook = SimpleFacebook.getInstance(this);
+        SetApplication.authenticationFirebase.mSimpleFacebook = SimpleFacebook.getInstance(this);
     }
 
 
@@ -104,4 +107,6 @@ public class UserLoginActivity extends AppCompatActivity implements GoogleApiCli
             Log.w(TAG, "onAuthStateChanged - Sign_out");
         }
     }
+
+
 }

@@ -42,6 +42,7 @@ public class AuthenticationFirebase {
     public FirebaseAuth firebaseAuth;
     public GoogleSignInOptions gso;
     public GoogleApiClient googleApiClient;
+    public SimpleFacebook mSimpleFacebook;
     private static AuthenticationFirebase instance;
 
     private static Permission[] permissions = new Permission[]{
@@ -144,8 +145,8 @@ public class AuthenticationFirebase {
     /**
      * Registro con Facebook
      **/
-    public void loginFacebook(final Context ctx, final SimpleFacebook simpleFacebook) {
-        simpleFacebook.login(new OnLoginListener() {
+    public void loginFacebook(final Context ctx) {
+        mSimpleFacebook.login(new OnLoginListener() {
             @Override
             public void onLogin(String accessToken, List<Permission> acceptedPermissions, List<Permission> declinedPermissions) {
                 Log.d("TokenFacebook ", accessToken);
@@ -189,8 +190,8 @@ public class AuthenticationFirebase {
     /**
      * LogOut Facebook
      **/
-    public void logoutFacebok(final Context context, SimpleFacebook simpleFacebook) {
-        simpleFacebook.logout(new OnLogoutListener() {
+    public void logoutFacebok(final Context context) {
+        mSimpleFacebook.logout(new OnLogoutListener() {
             @Override
             public void onLogout() {
 

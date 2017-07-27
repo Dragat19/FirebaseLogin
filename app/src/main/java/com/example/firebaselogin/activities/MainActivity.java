@@ -6,26 +6,23 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.example.firebaselogin.R;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends BaseActivity  {
     private static final String TAG = "MainActivity";
     private ImageView img;
-    GlideDrawableImageViewTarget imageViewTarget;
+    private GlideDrawableImageViewTarget imageViewTarget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        img = (ImageView)findViewById(R.id.img_logo);
-
-        imageViewTarget = new GlideDrawableImageViewTarget(img, 1);
+        initViews();
         Glide.with(this).load(R.drawable.splash).into(imageViewTarget);
 
         new Handler().postDelayed(new Runnable() {
@@ -43,4 +40,14 @@ public class MainActivity extends AppCompatActivity  {
         }, 4000);
     }
 
+    @Override
+    protected void initViews() {
+        img = (ImageView)findViewById(R.id.img_logo);
+        imageViewTarget = new GlideDrawableImageViewTarget(img, 1);
+    }
+
+    @Override
+    protected void initListeners() {
+
+    }
 }

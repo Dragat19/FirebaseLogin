@@ -1,12 +1,7 @@
 package com.example.firebaselogin.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,10 +10,9 @@ import android.widget.TextView;
 
 import com.example.firebaselogin.R;
 import com.example.firebaselogin.SetApplication;
+import com.example.firebaselogin.adapter.SignUpAdapter;
 import com.example.firebaselogin.fragment.SignUpItemFragment;
-import com.example.firebaselogin.utils.AuthenticationFirebase;
 import com.example.firebaselogin.utils.CustomViewPager;
-import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -27,7 +21,7 @@ import java.util.ArrayList;
  * Created by albertsanchez on 25/7/17.
  */
 
-public class SignUpActivity extends AppCompatActivity implements SignUpItemFragment.OnListener {
+public class SignUpActivity extends BaseActivity implements SignUpItemFragment.OnListener {
 
     //Flags
     private static final String TAG = "SignUpActivity";
@@ -37,7 +31,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
     private ImageView imgLogo;
     private TextView tvNext;
     private CustomViewPager viewPager;
-    private SignUpPagerAdapter adapter;
+    private SignUpAdapter adapter;
     private ArrayList<String> attrs;
 
 
@@ -46,11 +40,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        //Cast
-        viewPager = (CustomViewPager) findViewById(R.id.signup_viewpager);
-        imgLogo = (ImageView) findViewById(R.id.logo_signup);
-        btnNext = (RelativeLayout) findViewById(R.id.btnNextPager);
-        tvNext = (TextView) findViewById(R.id.next_text);
+        initViews();
+        initListeners();
 
         Picasso.with(this).load("http://apps.playtown.com.ar/set/public/landing/assets/images/logo2.png")
                 .centerCrop()
@@ -59,14 +50,28 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
 
 
         /** Adaptador Viewpager Tour **/
-        adapter = new SignUpPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(SignUpItemFragment.newInstance(0));
         adapter.addFragment(SignUpItemFragment.newInstance(1));
         adapter.addFragment(SignUpItemFragment.newInstance(2));
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
         viewPager.setOffscreenPageLimit(3);
+    }
+
+
+    @Override
+    protected void initViews() {
+        //Cast
+        viewPager = (CustomViewPager) findViewById(R.id.signup_viewpager);
+        imgLogo = (ImageView) findViewById(R.id.logo_signup);
+        btnNext = (RelativeLayout) findViewById(R.id.btnNextPager);
+        tvNext = (TextView) findViewById(R.id.next_text);
+        adapter = new SignUpAdapter(getSupportFragmentManager());
         attrs = new ArrayList<>();
+    }
+
+    @Override
+    protected void initListeners() {
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,9 +107,20 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
 
             }
         });
-
     }
 
+    @Override
+    public void onBackPressed() {
+        if (viewPager.getCurrentItem() > 0) {
+            previousPage();
+        } else {
+            supportFinishAfterTransition();
+            super.onBackPressed();
+        }
+    }
+
+
+    /** Callback **/
     @Override
     public void onRegister(String pass) {
         Log.d(TAG, "Registro " + attrs.get(0) + " " + attrs.get(1) + " " + attrs.get(2) + " " + attrs.get(3) + " " + pass);
@@ -112,31 +128,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
         finish();
     }
 
-    public class SignUpPagerAdapter extends FragmentStatePagerAdapter {
-
-        private ArrayList<Fragment> listFragment;
-
-        public void addFragment(Fragment fragment) {
-            listFragment.add(fragment);
-        }
-
-        public SignUpPagerAdapter(FragmentManager fm) {
-            super(fm);
-            listFragment = new ArrayList<>();
-        }
-
-        @Override
-        public int getCount() {
-            return listFragment != null ? listFragment.size() : 0;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return listFragment.get(position);
-        }
-
-    }
-
+    /** Metodos Implementados **/
     private void nextPage() {
         int currentPage = viewPager.getCurrentItem();
         int totalPages = viewPager.getAdapter().getCount();
@@ -156,16 +148,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpItemFragm
         viewPager.setCurrentItem(previousPage, true);
     }
 
-
-    @Override
-    public void onBackPressed() {
-        if (viewPager.getCurrentItem() > 0) {
-            previousPage();
-        } else {
-            supportFinishAfterTransition();
-            super.onBackPressed();
-        }
-    }
 
 
 }

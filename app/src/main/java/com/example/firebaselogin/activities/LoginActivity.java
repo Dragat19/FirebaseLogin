@@ -8,26 +8,19 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.firebaselogin.R;
 import com.example.firebaselogin.SetApplication;
-import com.example.firebaselogin.utils.AuthenticationFirebase;
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
@@ -37,7 +30,7 @@ import com.sromku.simple.fb.SimpleFacebook;
  * Created by albertsanchez on 21/7/17.
  */
 
-public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener , FirebaseAuth.AuthStateListener {
+public class LoginActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, FirebaseAuth.AuthStateListener {
 
     //Flags
     private static final String TAG = "LoginActivity";
@@ -49,9 +42,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private Button btnLogin;
     private TextView btnSignUp;
     private RelativeLayout btnGoogle;
-
-    //Facebook
-    private SimpleFacebook mSimpleFacebook;
     private RelativeLayout btnFacebook;
 
     @Override
@@ -59,6 +49,27 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login2);
 
+        //Inicializacion de firebase
+        onAuthStateChanged(SetApplication.authenticationFirebase.firebaseAuth);
+
+        //Inicializacion de Google
+        SetApplication.authenticationFirebase.listenerInitGoggle(this, this);
+
+        initViews();
+
+        initListeners();
+
+        /* Implementando View */
+        Picasso.with(this).load("http://apps.playtown.com.ar/set/public/landing/assets/images/logo2.png")
+                .centerCrop()
+                .resize(250, 250)
+                .into(imgLogo);
+    }
+
+
+
+    @Override
+    protected void initViews() {
         //Cast
         imgLogo = (ImageView) findViewById(R.id.img_logo);
         etEmail = (TextInputLayout) findViewById(R.id.login_email2);
@@ -67,23 +78,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         btnSignUp = (TextView) findViewById(R.id.txSignup);
         btnGoogle = (RelativeLayout) findViewById(R.id.btn_signin_google);
         btnFacebook = (RelativeLayout) findViewById(R.id.btn_facebook);
+    }
 
-        /* Inicializacion Firebase */
-        initFirebase();
+    @Override
+    protected void initListeners() {
 
-
-        /* Implementando View */
-        Picasso.with(this).load("http://apps.playtown.com.ar/set/public/landing/assets/images/logo2.png")
-                .centerCrop()
-                .resize(250, 250)
-                .into(imgLogo);
-
-
-        /* Listener */
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 String strEmail = etEmail.getEditText().getText().toString();
                 String strPassword = etPassword.getEditText().getText().toString();
                 if (!validateEmail(strEmail)) {
@@ -122,22 +124,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         btnFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SetApplication.authenticationFirebase.loginFacebook(LoginActivity.this, mSimpleFacebook);
+                SetApplication.authenticationFirebase.loginFacebook(LoginActivity.this);
             }
         });
-    }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-        overridePendingTransition(0, 0);
-        super.onBackPressed();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mSimpleFacebook = SimpleFacebook.getInstance(this);
+        SetApplication.authenticationFirebase.mSimpleFacebook = SimpleFacebook.getInstance(this);
     }
 
     @Override
@@ -153,17 +149,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     }
 
-    public void initFirebase() {
-
-        //Inicializacion de firebase
-        onAuthStateChanged(SetApplication.authenticationFirebase.firebaseAuth);
-
-        //Inicializacion de Google
-        SetApplication.authenticationFirebase.listenerInitGoggle(this,this);
-
-    }
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -175,12 +160,41 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 break;
 
             default:
-                mSimpleFacebook.onActivityResult(requestCode, resultCode, data);
+                SetApplication.authenticationFirebase.mSimpleFacebook.onActivityResult(requestCode, resultCode, data);
                 break;
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(0, 0);
+        super.onBackPressed();
+    }
 
+    /** Callback **/
+    @Override
+    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user != null) {
+            Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getUid());
+            Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getEmail());
+            Intent intent = new Intent(LoginActivity.this, UserLoginActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            Log.w(TAG, "onAuthStateChanged - Sign_out");
+        }
+    }
+
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+
+    /** Metodos Implementados **/
     private boolean validateEmail(String email) {
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError("Invalidate e-mail");
@@ -197,24 +211,5 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
         etPassword.setError(null);
         return true;
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null) {
-            Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getUid());
-            Log.w(TAG, "onAuthStateChanged - Sign_in " + user.getEmail());
-            Intent intent = new Intent(LoginActivity.this, UserLoginActivity.class);
-            startActivity(intent);
-            finish();
-        } else {
-            Log.w(TAG, "onAuthStateChanged - Sign_out");
-        }
     }
 }
