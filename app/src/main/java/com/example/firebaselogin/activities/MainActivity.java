@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.example.firebaselogin.R;
 
-public class MainActivity extends BaseActivity  {
+public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     private ImageView img;
     private GlideDrawableImageViewTarget imageViewTarget;
@@ -30,10 +30,10 @@ public class MainActivity extends BaseActivity  {
             @Override
             public void run() {
 
-                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 ActivityOptionsCompat options = ActivityOptionsCompat.
-                        makeSceneTransitionAnimation(MainActivity.this, img,"logo_login");
-                startActivity(intent,options.toBundle());
+                        makeSceneTransitionAnimation(MainActivity.this, img, "logo_login");
+                startActivity(intent, options.toBundle());
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
             }
@@ -42,7 +42,7 @@ public class MainActivity extends BaseActivity  {
 
     @Override
     protected void initViews() {
-        img = (ImageView)findViewById(R.id.img_logo);
+        img = (ImageView) findViewById(R.id.img_logo);
         imageViewTarget = new GlideDrawableImageViewTarget(img, 1);
     }
 

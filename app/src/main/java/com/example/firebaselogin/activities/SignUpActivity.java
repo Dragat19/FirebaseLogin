@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 
 public class SignUpActivity extends BaseActivity implements SignUpItemFragment.OnListener {
-
+    
     //Flags
     private static final String TAG = "SignUpActivity";
 

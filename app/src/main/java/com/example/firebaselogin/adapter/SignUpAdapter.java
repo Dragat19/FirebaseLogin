@@ -22,6 +22,7 @@ public class SignUpAdapter extends FragmentStatePagerAdapter {
     public void addFragment(Fragment fragment) {
         listFragment.add(fragment);
     }
+
     @Override
     public int getCount() {
         return listFragment != null ? listFragment.size() : 0;

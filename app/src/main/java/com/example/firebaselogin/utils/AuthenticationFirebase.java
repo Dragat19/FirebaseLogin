@@ -39,20 +39,21 @@ import java.util.List;
 
 public class AuthenticationFirebase {
 
-    public FirebaseAuth firebaseAuth;
-    public GoogleSignInOptions gso;
-    public GoogleApiClient googleApiClient;
-    public SimpleFacebook mSimpleFacebook;
-    private static AuthenticationFirebase instance;
+    private static final String TAG = "AuthenticationFirebase";
 
+    //Facebook
+    public SimpleFacebook mSimpleFacebook;
     private static Permission[] permissions = new Permission[]{
             Permission.USER_PHOTOS,
             Permission.EMAIL,
             Permission.PUBLISH_ACTION
     };
 
-
-    private static final String TAG = "AuthenticationFirebase";
+    //Firebase
+    private static AuthenticationFirebase instance;
+    public FirebaseAuth firebaseAuth;
+    public GoogleApiClient googleApiClient;
+    public GoogleSignInOptions gso;
 
     public AuthenticationFirebase(Context ctx) {
 
@@ -78,7 +79,7 @@ public class AuthenticationFirebase {
     /**
      * Inicializacion de Google
      **/
-    public void initGoogle(Context ctx,GoogleApiClient.OnConnectionFailedListener listener){
+    public void initGoogle(Context ctx, GoogleApiClient.OnConnectionFailedListener listener) {
 
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(ctx.getString(R.string.default_web_client_id))
@@ -86,7 +87,7 @@ public class AuthenticationFirebase {
                 .build();
 
         googleApiClient = new GoogleApiClient.Builder(ctx)
-                .enableAutoManage((FragmentActivity) ctx,listener)
+                .enableAutoManage((FragmentActivity) ctx, listener)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
@@ -160,6 +161,35 @@ public class AuthenticationFirebase {
     }
 
     /**
+     * SignOut con Firebase
+     **/
+    public void signOutFirebase(final Context ctx) {
+        firebaseAuth.signOut();
+        Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                if (status.isSuccess()) {
+                    Intent intent = new Intent(ctx, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    ctx.startActivity(intent);
+                    ((Activity) ctx).finish();
+
+                } else {
+                    Toast.makeText(ctx, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void addAuthStateListener(FirebaseAuth.AuthStateListener listener) {
+        firebaseAuth.addAuthStateListener(listener);
+    }
+
+    public void removeAuthStateListener(FirebaseAuth.AuthStateListener listener) {
+        firebaseAuth.removeAuthStateListener(listener);
+    }
+
+    /**
      * Registro con Facebook
      **/
     public void loginFacebook(final Context ctx) {
@@ -215,35 +245,6 @@ public class AuthenticationFirebase {
             }
 
         });
-    }
-
-    /**
-     * SignOut con Firebase
-     **/
-    public void signOutFirebase(final Context ctx) {
-        firebaseAuth.signOut();
-        Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                if (status.isSuccess()) {
-                    Intent intent = new Intent(ctx, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    ctx.startActivity(intent);
-                    ((Activity) ctx).finish();
-
-                } else {
-                    Toast.makeText(ctx, "Error in Google Sign Out", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    public void addAuthStateListener(FirebaseAuth.AuthStateListener listener) {
-        firebaseAuth.addAuthStateListener(listener);
-    }
-
-    public void removeAuthStateListener(FirebaseAuth.AuthStateListener listener) {
-        firebaseAuth.removeAuthStateListener(listener);
     }
 
 }

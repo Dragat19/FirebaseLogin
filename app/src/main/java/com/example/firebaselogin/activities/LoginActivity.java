@@ -65,7 +65,6 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     }
 
 
-
     @Override
     protected void initViews() {
         //Cast
@@ -170,7 +169,9 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         super.onBackPressed();
     }
 
-    /** Callback **/
+    /**
+     * Callback
+     **/
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -192,7 +193,9 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     }
 
 
-    /** Metodos Implementados **/
+    /**
+     * Metodos Implementados
+     **/
     private boolean validateEmail(String email) {
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError("Invalidate e-mail");

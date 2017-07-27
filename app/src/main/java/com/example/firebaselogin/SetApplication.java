@@ -11,7 +11,6 @@ import com.example.firebaselogin.utils.AuthenticationFirebase;
 public class SetApplication extends Application {
 
     public static AuthenticationFirebase authenticationFirebase;
-    private static SetApplication instance;
 
     @Override
     public void onCreate() {
