@@ -128,6 +128,13 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     }
 
     @Override
+    public void onBackPressed() {
+        finish();
+        overridePendingTransition(0, 0);
+        super.onBackPressed();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         SetApplication.authenticationFirebase.mSimpleFacebook = SimpleFacebook.getInstance(this);
@@ -146,6 +153,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -160,13 +168,6 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                 SetApplication.authenticationFirebase.mSimpleFacebook.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
-        overridePendingTransition(0, 0);
-        super.onBackPressed();
     }
 
     /**
@@ -191,7 +192,6 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
-
 
     /**
      * Metodos Implementados
